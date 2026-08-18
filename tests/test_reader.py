@@ -7,6 +7,9 @@ client interaction goes through the fakes.
 from __future__ import annotations
 
 import datetime as dt
+import pathlib
+import sys
+import types
 
 import pytest
 from fakes import Channel, Dialog, FakeClient, FakeFloodWaitError, FloodingClient, Message, User
@@ -283,6 +286,20 @@ def test_unseen_entity_is_retried_after_priming_the_dialog_cache():
     assert client.get_entity_calls == [555, 555]
 
 
+def test_a_still_unknown_entity_is_not_retried_a_third_time():
+    """Priming buys exactly one retry; a second failure is the caller's problem."""
+    class AlwaysFails(FakeClient):
+        def get_entity(self, target):
+            self.get_entity_calls.append(target)
+            raise ValueError("Could not find the input entity")
+
+    client = AlwaysFails()
+    with pytest.raises(ValueError):
+        resolve_entity(client, "555")
+    assert client.dialogs_listed == 1
+    assert client.get_entity_calls == [555, 555]
+
+
 def test_dialogs_by_name_is_case_insensitive_and_keeps_pairs():
     a, b = Channel(id=1, title="Voice Product"), User(id=2, first_name="Dan")
     client = FakeClient(dialogs=[Dialog("Voice Product", a), Dialog("Dan", b),
@@ -291,6 +308,30 @@ def test_dialogs_by_name_is_case_insensitive_and_keeps_pairs():
     assert dialogs_by_name(client, ["DAN", "voice PRODUCT"]) == [
         (a, "Voice Product"), (b, "Dan")]
     assert dialogs_by_name(client, ["missing"]) == []
+
+
+# --- client construction -----------------------------------------------------
+
+def test_make_client_builds_a_user_session_client(monkeypatch):
+    """A user session, never a bot token — a bot cannot read arbitrary channels."""
+    seen = {}
+
+    class FakeTelegramClient:
+        def __init__(self, session, api_id, api_hash):
+            seen.update(session=session, api_id=api_id, api_hash=api_hash)
+            self.session = types.SimpleNamespace()
+
+    sync = types.ModuleType("telethon.sync")
+    setattr(sync, "TelegramClient", FakeTelegramClient)
+    monkeypatch.setitem(sys.modules, "telethon", types.ModuleType("telethon"))
+    monkeypatch.setitem(sys.modules, "telethon.sync", sync)
+
+    client = reader.make_client(77, "hash", pathlib.Path("/tmp/s.session"),
+                                flood_sleep_threshold=3)
+
+    # session stringified, credentials passed through, and no token argument exists
+    assert seen == {"session": "/tmp/s.session", "api_id": 77, "api_hash": "hash"}
+    assert client.session.flood_sleep_threshold == 3
 
 
 # --- read_messages one-shot --------------------------------------------------
