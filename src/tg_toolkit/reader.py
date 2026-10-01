@@ -65,8 +65,12 @@ def resolve_credentials(api_id: int | str | None = None, api_hash: str | None = 
     if api_id and api_hash:
         if cache:
             cache.parent.mkdir(parents=True, exist_ok=True)
-            cache.write_text(json.dumps({"api_id": int(api_id), "api_hash": api_hash}),
-                             encoding="utf-8")
+            # api_hash is a secret: create owner-only (no world-readable window), and
+            # chmod too in case the file already existed with a looser mode.
+            fd = os.open(cache, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                fh.write(json.dumps({"api_id": int(api_id), "api_hash": api_hash}))
+            cache.chmod(0o600)
         return int(api_id), api_hash
     if cache and cache.exists():
         d = json.loads(cache.read_text(encoding="utf-8"))

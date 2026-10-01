@@ -80,8 +80,11 @@ def notify(title: str, body: str, *, urgent: bool = False,
     """
     log.debug("notify urgent=%s title=%r", urgent, title)
     thread = send_async(bot[0], bot[1], f"{title}\n{body[:MAX_BODY]}") if bot else None
-    subprocess.run(_notify_send_argv(title, body, urgent=urgent, app_name=app_name),
-                   check=False)
+    try:
+        subprocess.run(_notify_send_argv(title, body, urgent=urgent, app_name=app_name),
+                       check=False)
+    except OSError as exc:  # no notify-send (headless box) — push is best-effort
+        log.warning("notify-send failed: %s: %s", type(exc).__name__, exc)
     return thread
 
 

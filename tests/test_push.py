@@ -215,3 +215,11 @@ def test_a_raising_callback_never_escapes(monkeypatch, caplog):
     with caplog.at_level("WARNING"):
         notify_with_action("T", "B", action_label="X", on_action=boom).join(timeout=2)
     assert "callback bug" in caplog.text
+
+
+def test_notify_without_notify_send_installed_never_raises(monkeypatch):
+    def missing(cmd, **kw):
+        raise FileNotFoundError(2, "No such file or directory", "notify-send")
+
+    monkeypatch.setattr(push.subprocess, "run", missing)
+    assert notify("Title", "Body") is None

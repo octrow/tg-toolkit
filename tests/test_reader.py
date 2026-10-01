@@ -343,3 +343,9 @@ def test_read_messages_opens_and_closes_the_client(monkeypatch):
                                 mapper=lambda m: m.id, flood_error=FakeFloodWaitError)
     assert rows == [2, 1]
     assert client.entered and client.exited
+
+
+def test_credentials_cache_is_owner_only(tmp_path):
+    cache = tmp_path / "creds.json"
+    resolve_credentials("123", "hash", cache_path=cache, env={})
+    assert cache.stat().st_mode & 0o077 == 0
