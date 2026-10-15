@@ -188,7 +188,7 @@ push:    scrub_token(s) -> str
 ## Tests
 
 ```bash
-cd /home/octrow/dev/pylibs && uv run --package tg-toolkit --extra dev pytest tg-toolkit/tests -q
+uv sync --extra dev && uv run pytest -q
 ```
 
 No network, no session file, no real `TelegramClient`. `tests/test_no_telethon.py`
