@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="460" viewBox="0 0 1200 460" role="img" aria-labelledby="t d">
+  <title id="t">tg-toolkit</title>
+  <desc id="d">tg-toolkit: read Telegram as yourself, paced and incremental; write Telegram Desktop export JSON; push to your own bot. Right: a message with an emoji and a code entity at UTF-16 offset 7, length 22, and the text_entities that to_desktop_message produces for it.</desc>
+  <style>
+    .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+    .bg { fill: #F3F6F9; } .card { fill: #FFFFFF; stroke: #D5DEE6; } .bubble { fill: #E4F1FB; }
+    .fg { fill: #14202B; } .muted { fill: #56677A; } .pri { fill: #1667A8; } .acc { fill: #B4470F; }
+    .code { fill: #D5E6F4; } .line { stroke: #1667A8; } .rule { stroke: #8C9BAA; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #0F161D; } .card { fill: #16202A; stroke: #2A3846; } .bubble { fill: #1C3247; }
+      .fg { fill: #E3EAF1; } .muted { fill: #98A8B8; } .pri { fill: #6CBCF2; } .acc { fill: #F29A62; }
+      .code { fill: #24496A; } .line { stroke: #6CBCF2; } .rule { stroke: #6B7C8D; }
+    }
+  </style>
+  <rect class="bg" width="1200" height="460" rx="20"/>
+
+  <g id="title-block">
+    <text x="60" y="80" class="mono pri" font-size="18" letter-spacing="1.5">TELETHON · DESKTOP EXPORT · BOT API</text>
+    <text x="56" y="160" class="sans fg" font-size="76" font-weight="800" letter-spacing="-1.5">tg-toolkit</text>
+    <text x="60" y="214" class="sans fg" font-size="27" font-weight="600">Read Telegram as yourself,</text>
+    <text x="60" y="250" class="sans muted" font-size="27">paced and incremental.</text>
+    <text x="60" y="286" class="sans muted" font-size="27">Write Desktop-export JSON.</text>
+    <text x="60" y="322" class="sans muted" font-size="27">Push to your own bot.</text>
+    <text x="60" y="398" class="mono fg" font-size="21">$ pip install tg-toolkit</text>
+  </g>
+
+  <g id="project-proof">
+    <rect class="card" x="600" y="40" width="560" height="380" rx="16" stroke-width="2"/>
+    <text x="628" y="78" class="mono muted" font-size="16" letter-spacing="1.5">MESSAGE · ENTITY OFFSETS IN UTF-16</text>
+    <rect class="bubble" x="628" y="96" width="504" height="58" rx="14"/>
+    <rect class="code" x="736" y="108" width="290" height="34" rx="6"/>
+    <text x="646" y="133" class="mono fg" font-size="21">🎉 run</text>
+    <text x="742" y="133" class="mono fg" font-size="21">pip install tg-toolkit</text>
+    <path class="rule" d="M646 168 V178 H726 V168 M742 168 V178 H1020 V168" fill="none" stroke-width="2"/>
+    <text x="646" y="204" class="mono muted" font-size="18">0..7</text>
+    <text x="742" y="204" class="mono pri" font-size="18">code · offset 7 · length 22</text>
+    <path class="line" d="M646 222 H1132" stroke-width="1" stroke-dasharray="4 6"/>
+    <text x="628" y="254" class="mono muted" font-size="16" letter-spacing="1.5">to_desktop_message(msg)</text>
+    <text x="646" y="286" class="mono fg" font-size="20">"text_entities": [</text>
+    <text x="676" y="314" class="mono fg" font-size="20">"🎉 run ",</text>
+    <text x="676" y="342" class="mono fg" font-size="20">{"type": <tspan class="pri">"code"</tspan>,</text>
+    <text x="706" y="370" class="mono fg" font-size="20">"text": "pip install tg-toolkit"}</text>
+    <text x="646" y="398" class="mono fg" font-size="20">]</text>
+  </g>
+</svg>

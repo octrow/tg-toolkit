@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" role="img" aria-labelledby="t d">
+  <title id="t">How scan_messages reads a chat</title>
+  <desc id="d">The cursor becomes min_id. iter_messages walks newest-first with 1 second between requests. A FloodWaitError sleeps the seconds the server asks for and resumes the same iterator. scan_decision returns TAKE (the message goes to your mapper), SKIP (date at or after until) or STOP (date older than since, or max_scan reached).</desc>
+  <style>
+    .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+    .bg { fill: #F3F6F9; } .card { fill: #FFFFFF; stroke: #D5DEE6; } .warn { fill: #FBEDE3; stroke: #E3B394; }
+    .fg { fill: #14202B; } .muted { fill: #56677A; } .pri { fill: #1667A8; } .acc { fill: #B4470F; }
+    .take { fill: #E1EEF8; } .skip { fill: #E8ECF0; } .stop { fill: #FBEDE3; }
+    .ln { stroke: #1667A8; } .lnw { stroke: #B4470F; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #0F161D; } .card { fill: #16202A; stroke: #2A3846; } .warn { fill: #2E2016; stroke: #6E4426; }
+      .fg { fill: #E3EAF1; } .muted { fill: #98A8B8; } .pri { fill: #6CBCF2; } .acc { fill: #F29A62; }
+      .take { fill: #1C3247; } .skip { fill: #212C37; } .stop { fill: #2E2016; }
+      .ln { stroke: #6CBCF2; } .lnw { stroke: #F29A62; }
+    }
+  </style>
+  <rect class="bg" width="1200" height="400" rx="20"/>
+
+  <g id="cursor">
+    <rect class="card" x="48" y="56" width="300" height="120" rx="14" stroke-width="2"/>
+    <text x="72" y="96" class="mono muted" font-size="18">cursor</text>
+    <text x="72" y="130" class="mono fg" font-size="20">last_seen_msg_id</text>
+    <text x="72" y="160" class="mono pri" font-size="20">→ min_id</text>
+  </g>
+  <path class="ln" d="M352 116 H408 M396 106 L410 116 L396 126" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g id="iterate">
+    <rect class="card" x="416" y="56" width="340" height="120" rx="14" stroke-width="2"/>
+    <text x="440" y="96" class="mono fg" font-size="20">iter_messages</text>
+    <text x="440" y="130" class="sans muted" font-size="20">newest first</text>
+    <text x="440" y="160" class="sans muted" font-size="20">1 s between requests</text>
+  </g>
+  <path class="ln" d="M760 116 H816 M804 106 L818 116 L804 126" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g id="flood">
+    <path class="lnw" d="M540 180 V246 M530 236 L540 250 L550 236" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="lnw" d="M632 250 V184 M622 194 L632 180 L642 194" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect class="warn" x="416" y="254" width="340" height="110" rx="14" stroke-width="2"/>
+    <text x="440" y="292" class="mono acc" font-size="20">FloodWaitError</text>
+    <text x="440" y="322" class="sans fg" font-size="20">sleep the seconds it asks for,</text>
+    <text x="440" y="350" class="sans fg" font-size="20">resume the same iterator</text>
+  </g>
+
+  <g id="decide">
+    <rect class="card" x="824" y="56" width="328" height="120" rx="14" stroke-width="2"/>
+    <text x="848" y="96" class="mono fg" font-size="20">scan_decision</text>
+    <text x="848" y="130" class="sans muted" font-size="20">per message,</text>
+    <text x="848" y="160" class="sans muted" font-size="20">pure function</text>
+    <rect class="take" x="824" y="196" width="328" height="48" rx="10"/>
+    <text x="844" y="227" class="mono pri" font-size="20">TAKE <tspan class="fg">→ mapper(msg)</tspan></text>
+    <rect class="skip" x="824" y="254" width="328" height="48" rx="10"/>
+    <text x="844" y="285" class="mono muted" font-size="20">SKIP <tspan class="fg">date ≥ until</tspan></text>
+    <rect class="stop" x="824" y="312" width="328" height="52" rx="10"/>
+    <text x="844" y="345" class="mono acc" font-size="20">STOP <tspan class="fg">&lt; since · max_scan</tspan></text>
+  </g>
+
+  <text x="48" y="230" class="sans muted" font-size="18">first run: since</text>
+  <text x="48" y="256" class="sans muted" font-size="18">bounds the window;</text>
+  <text x="48" y="282" class="sans muted" font-size="18">later runs: min_id</text>
+  <text x="48" y="308" class="sans muted" font-size="18">skips what you saw</text>
+</svg>
