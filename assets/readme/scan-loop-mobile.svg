@@ -19,17 +19,17 @@
 
   <g id="cursor">
     <rect class="card" x="30" y="30" width="540" height="120" rx="14" stroke-width="2"/>
-    <text x="54" y="70" class="mono muted" font-size="19">cursor</text>
-    <text x="54" y="104" class="mono fg" font-size="20">last_seen_msg_id</text>
-    <text x="54" y="134" class="mono pri" font-size="20">→ min_id</text>
+    <text x="54" y="70" class="mono muted" font-size="21">cursor</text>
+    <text x="54" y="104" class="mono fg" font-size="21">last_seen_msg_id</text>
+    <text x="54" y="134" class="mono pri" font-size="21">→ min_id</text>
   </g>
   <path class="ln" d="M300 154 V192 M290 182 L300 196 L310 182" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 
   <g id="iterate">
     <rect class="card" x="30" y="200" width="540" height="120" rx="14" stroke-width="2"/>
-    <text x="54" y="240" class="mono fg" font-size="20">iter_messages</text>
-    <text x="54" y="274" class="sans muted" font-size="20">newest first</text>
-    <text x="54" y="304" class="sans muted" font-size="20">1 s between requests</text>
+    <text x="54" y="240" class="mono fg" font-size="21">iter_messages</text>
+    <text x="54" y="274" class="sans muted" font-size="21">newest first</text>
+    <text x="54" y="304" class="sans muted" font-size="21">1 s between requests</text>
   </g>
   <path class="ln" d="M510 324 V512 M500 502 L510 516 L520 502" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 
@@ -37,24 +37,24 @@
     <path class="lnw" d="M150 324 V372 M140 362 L150 376 L160 362" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
     <path class="lnw" d="M250 376 V328 M240 338 L250 324 L260 338" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
     <rect class="warn" x="30" y="380" width="420" height="110" rx="14" stroke-width="2"/>
-    <text x="54" y="418" class="mono acc" font-size="20">FloodWaitError</text>
-    <text x="54" y="448" class="sans fg" font-size="20">sleep the seconds it asks for,</text>
-    <text x="54" y="476" class="sans fg" font-size="20">resume the same iterator</text>
+    <text x="54" y="418" class="mono acc" font-size="21">FloodWaitError</text>
+    <text x="54" y="448" class="sans fg" font-size="21">sleep the seconds it asks for,</text>
+    <text x="54" y="476" class="sans fg" font-size="21">resume the same iterator</text>
   </g>
 
   <g id="decide">
     <rect class="card" x="30" y="520" width="540" height="120" rx="14" stroke-width="2"/>
-    <text x="54" y="560" class="mono fg" font-size="20">scan_decision</text>
-    <text x="54" y="594" class="sans muted" font-size="20">per message,</text>
-    <text x="54" y="624" class="sans muted" font-size="20">pure function</text>
+    <text x="54" y="560" class="mono fg" font-size="21">scan_decision</text>
+    <text x="54" y="594" class="sans muted" font-size="21">per message,</text>
+    <text x="54" y="624" class="sans muted" font-size="21">pure function</text>
     <rect class="take" x="30" y="656" width="540" height="48" rx="10"/>
-    <text x="50" y="687" class="mono pri" font-size="20">TAKE <tspan class="fg">→ mapper(msg)</tspan></text>
+    <text x="50" y="687" class="mono pri" font-size="21">TAKE <tspan class="fg">→ mapper(msg)</tspan></text>
     <rect class="skip" x="30" y="714" width="540" height="48" rx="10"/>
-    <text x="50" y="745" class="mono muted" font-size="20">SKIP <tspan class="fg">date ≥ until</tspan></text>
+    <text x="50" y="745" class="mono muted" font-size="21">SKIP <tspan class="fg">date ≥ until</tspan></text>
     <rect class="stop" x="30" y="772" width="540" height="52" rx="10"/>
-    <text x="50" y="805" class="mono acc" font-size="20">STOP <tspan class="fg">&lt; since · max_scan</tspan></text>
+    <text x="50" y="805" class="mono acc" font-size="21">STOP <tspan class="fg">&lt; since · max_scan</tspan></text>
   </g>
 
-  <text x="30" y="870" class="sans muted" font-size="19">first run: since bounds the window;</text>
-  <text x="30" y="900" class="sans muted" font-size="19">later runs: min_id skips what you saw</text>
+  <text x="30" y="870" class="sans muted" font-size="21">first run: since bounds the window;</text>
+  <text x="30" y="900" class="sans muted" font-size="21">later runs: min_id skips what you saw</text>
 </svg>

@@ -16,7 +16,7 @@
   <rect class="bg" width="600" height="790" rx="20"/>
 
   <g id="title-block">
-    <text x="30" y="62" class="mono pri" font-size="19" letter-spacing="1.5">TELETHON · DESKTOP EXPORT · BOT API</text>
+    <text x="30" y="62" class="mono pri" font-size="21" letter-spacing="1.5">TELETHON · DESKTOP EXPORT · BOT API</text>
     <text x="26" y="140" class="sans fg" font-size="76" font-weight="800" letter-spacing="-1.5">tg-toolkit</text>
     <text x="30" y="190" class="sans fg" font-size="27" font-weight="600">Read Telegram as yourself,</text>
     <text x="30" y="226" class="sans muted" font-size="27">paced and incremental.</text>
@@ -27,20 +27,20 @@
 
   <g id="project-proof" transform="translate(-580 340)">
     <rect class="card" x="600" y="40" width="560" height="380" rx="16" stroke-width="2"/>
-    <text x="628" y="78" class="mono muted" font-size="19" letter-spacing="1.5">MESSAGE · ENTITY OFFSETS IN UTF-16</text>
+    <text x="628" y="78" class="mono muted" font-size="21" letter-spacing="1.5">MESSAGE · ENTITY OFFSETS IN UTF-16</text>
     <rect class="bubble" x="628" y="96" width="504" height="58" rx="14"/>
     <rect class="code" x="736" y="108" width="290" height="34" rx="6"/>
     <text x="646" y="133" class="mono fg" font-size="21">🎉 run</text>
     <text x="742" y="133" class="mono fg" font-size="21">pip install tg-toolkit</text>
     <path class="rule" d="M646 168 V178 H726 V168 M742 168 V178 H1020 V168" fill="none" stroke-width="2"/>
-    <text x="646" y="204" class="mono muted" font-size="19">0..7</text>
-    <text x="742" y="204" class="mono pri" font-size="19">code · offset 7 · length 22</text>
+    <text x="646" y="204" class="mono muted" font-size="21">0..7</text>
+    <text x="742" y="204" class="mono pri" font-size="21">code · offset 7 · length 22</text>
     <path class="line" d="M646 222 H1132" stroke-width="1" stroke-dasharray="4 6"/>
-    <text x="628" y="254" class="mono muted" font-size="19" letter-spacing="1.5">to_desktop_message(msg)</text>
-    <text x="646" y="286" class="mono fg" font-size="20">"text_entities": [</text>
-    <text x="676" y="314" class="mono fg" font-size="20">"🎉 run ",</text>
-    <text x="676" y="342" class="mono fg" font-size="20">{"type": <tspan class="pri">"code"</tspan>,</text>
-    <text x="706" y="370" class="mono fg" font-size="20">"text": "pip install tg-toolkit"}</text>
-    <text x="646" y="398" class="mono fg" font-size="20">]</text>
+    <text x="628" y="254" class="mono muted" font-size="21" letter-spacing="1.5">to_desktop_message(msg)</text>
+    <text x="646" y="286" class="mono fg" font-size="21">"text_entities": [</text>
+    <text x="676" y="314" class="mono fg" font-size="21">"🎉 run ",</text>
+    <text x="676" y="342" class="mono fg" font-size="21">{"type": <tspan class="pri">"code"</tspan>,</text>
+    <text x="706" y="370" class="mono fg" font-size="21">"text": "pip install tg-toolkit"}</text>
+    <text x="646" y="398" class="mono fg" font-size="21">]</text>
   </g>
 </svg>
