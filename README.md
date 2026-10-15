@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/octrow/tg-toolkit/main/assets/readme/hero.svg" width="100%" alt="tg-toolkit: read Telegram as yourself, paced and incremental; write Telegram Desktop export JSON; push to your own bot. Beside it, a message with an emoji and a code entity at UTF-16 offset 7, length 22, and the text_entities that to_desktop_message produces for it.">
+  <picture>
+    <source media="(max-width: 600px)" srcset="https://raw.githubusercontent.com/octrow/tg-toolkit/main/assets/readme/hero-mobile.svg">
+    <img src="https://raw.githubusercontent.com/octrow/tg-toolkit/main/assets/readme/hero.svg" width="100%" alt="tg-toolkit: read Telegram as yourself, paced and incremental; write Telegram Desktop export JSON; push to your own bot. Beside it, a message with an emoji and a code entity at UTF-16 offset 7, length 22, and the text_entities that to_desktop_message produces for it.">
+  </picture>
 </p>
 
 <p align="center">
@@ -53,7 +56,10 @@ span comes out whole.
 ## How the reader works
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/octrow/tg-toolkit/main/assets/readme/scan-loop.svg" width="100%" alt="How scan_messages reads a chat: the cursor becomes min_id; iter_messages walks newest-first with 1 second between requests; a FloodWaitError sleeps the seconds the server asks for and resumes the same iterator; scan_decision returns TAKE (message goes to your mapper), SKIP (date at or after until) or STOP (older than since, or max_scan reached).">
+  <picture>
+    <source media="(max-width: 600px)" srcset="https://raw.githubusercontent.com/octrow/tg-toolkit/main/assets/readme/scan-loop-mobile.svg">
+    <img src="https://raw.githubusercontent.com/octrow/tg-toolkit/main/assets/readme/scan-loop.svg" width="100%" alt="How scan_messages reads a chat: the cursor becomes min_id; iter_messages walks newest-first with 1 second between requests; a FloodWaitError sleeps the seconds the server asks for and resumes the same iterator; scan_decision returns TAKE (message goes to your mapper), SKIP (date at or after until) or STOP (older than since, or max_scan reached).">
+  </picture>
 </p>
 
 - **User session, never a bot token.** A bot can't read arbitrary public channels or your own dialogs.
