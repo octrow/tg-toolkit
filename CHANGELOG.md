@@ -9,6 +9,11 @@ All notable changes to this project are documented here. The format follows
 
 - MIT license, community files, CI, security and scorecard workflows.
 
+## [0.1.1] - 2026-10-15
+
+### Added
+- PyPI metadata: README as the project description, license, project URLs, classifiers.
+
 ## [0.1.0]
 
 ### Added
