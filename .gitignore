@@ -9,3 +9,8 @@ __pycache__/
 build/
 dist/
 .venv/
+
+# Environment
+.env
+.env.*
+!.env.example
