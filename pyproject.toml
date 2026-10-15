@@ -1,6 +1,6 @@
 [project]
 name = "tg-toolkit"
-version = "0.1.2"
+version = "0.1.3"
 description = "Telethon user-session reading (incremental, FloodWait-safe), Telegram-Desktop-export conversion, and dependency-free Bot API push"
 readme = "README.md"
 license = "MIT"
