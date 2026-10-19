@@ -322,7 +322,7 @@ def test_make_client_builds_a_user_session_client(monkeypatch):
             self.session = types.SimpleNamespace()
 
     sync = types.ModuleType("telethon.sync")
-    setattr(sync, "TelegramClient", FakeTelegramClient)
+    sync.TelegramClient = FakeTelegramClient
     monkeypatch.setitem(sys.modules, "telethon", types.ModuleType("telethon"))
     monkeypatch.setitem(sys.modules, "telethon.sync", sync)
 
