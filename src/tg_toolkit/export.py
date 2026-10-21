@@ -30,7 +30,7 @@ from __future__ import annotations
 import glob
 import json
 from collections.abc import Iterable
-from datetime import timezone
+from datetime import UTC
 from pathlib import Path
 
 #: Telethon entity class name → Telegram-Desktop ``text_entities`` type.
@@ -120,7 +120,7 @@ def to_desktop_message(msg) -> dict | None:
         "id": msg.id,
         "type": "message",
         "date": local.strftime(_DESKTOP_TIME),
-        "date_unixtime": str(int(msg.date.replace(tzinfo=timezone.utc).timestamp())),
+        "date_unixtime": str(int(msg.date.replace(tzinfo=UTC).timestamp())),
         "from": sender_name(sender),
         "from_id": f"{prefix}{sid}" if sid else None,
         "text": raw,
