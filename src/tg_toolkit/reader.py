@@ -34,7 +34,7 @@ import logging
 import os
 import time
 from collections.abc import Callable, Iterable, Iterator
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -146,7 +146,7 @@ def last_seen_msg_id(last_seen_id: str | int | None) -> int:
 def window_cutoff(days: int = DEFAULT_WINDOW_DAYS, *, tz=None,
                   now: datetime | None = None) -> datetime:
     """``now - days`` as an aware datetime, for use as ``since``."""
-    now = now or datetime.now(tz or timezone.utc)
+    now = now or datetime.now(tz or UTC)
     return now - timedelta(days=days)
 
 
