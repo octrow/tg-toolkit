@@ -66,7 +66,7 @@ class Message:
                  forward=None, media=None, reactions=None, video=None):
         self.id = id
         self.message = self.raw_text = text
-        self.date = date or dt.datetime(2026, 1, 2, 3, 4, 5, tzinfo=dt.timezone.utc)
+        self.date = date or dt.datetime(2026, 1, 2, 3, 4, 5, tzinfo=dt.UTC)
         self.sender = sender
         self.sender_id = sender_id if sender_id is not None else getattr(sender, "id", None)
         self.entities = entities
