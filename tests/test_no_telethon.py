@@ -23,7 +23,6 @@ class BlockTelethon:
     def find_spec(self, name, path=None, target=None):
         if name == "telethon" or name.startswith("telethon."):
             raise ImportError(f"No module named {name!r} (blocked by test)")
-        return None
 
 
 @pytest.fixture
