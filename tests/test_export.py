@@ -36,7 +36,7 @@ from tg_toolkit.export import (
     write_export,
 )
 
-UTC = dt.timezone.utc
+UTC = dt.UTC
 
 
 def test_import_does_not_pull_telethon():
