@@ -340,7 +340,8 @@ def test_read_messages_opens_and_closes_the_client(monkeypatch):
     client = FakeClient(msgs((2, 10), (1, 10)), entities={"afisha": Channel(id=9)})
     monkeypatch.setattr(reader, "make_client", lambda *a, **k: client)
     rows = reader.read_messages(api_id=1, api_hash="h", session="s", target="@afisha",
-                                mapper=lambda m: m.id, flood_error=FakeFloodWaitError)
+                                mapper=lambda m: m.id, flood_error=FakeFloodWaitError,
+                                    since=None)
     assert rows == [2, 1]
     assert client.entered and client.exited
 
@@ -349,3 +350,53 @@ def test_credentials_cache_is_owner_only(tmp_path):
     cache = tmp_path / "creds.json"
     resolve_credentials("123", "hash", cache_path=cache, env={})
     assert cache.stat().st_mode & 0o077 == 0
+
+
+# --- read_messages default limits --------------------------------------------
+
+def _patched_read(monkeypatch, captured, **kw):
+    class Ctx:
+        def __enter__(self):
+            return object()
+
+        def __exit__(self, *a):
+            return False
+
+    monkeypatch.setattr(reader, "make_client", lambda *a, **k: Ctx())
+    monkeypatch.setattr(reader, "resolve_entity", lambda c, t: t)
+    monkeypatch.setattr(reader, "collect",
+                        lambda client, entity, mapper, **k: captured.update(k) or [])
+    return reader.read_messages(api_id=1, api_hash="h", session="s", target="t",
+                                mapper=lambda m: m, **kw)
+
+
+def test_read_messages_applies_default_scan_limits(monkeypatch):
+    got: dict = {}
+    _patched_read(monkeypatch, got)
+    assert got["max_scan"] == reader.DEFAULT_MAX_SCAN
+    assert got["since"] is not None
+    age = dt.datetime.now(UTC) - got["since"]
+    assert abs(age - dt.timedelta(days=reader.DEFAULT_WINDOW_DAYS)) < dt.timedelta(minutes=1)
+
+
+def test_read_messages_caller_values_and_none_win(monkeypatch):
+    got: dict = {}
+    _patched_read(monkeypatch, got, max_scan=None, since=None)
+    assert got["max_scan"] is None and got["since"] is None
+    got = {}
+    _patched_read(monkeypatch, got, max_scan=7, since=at(3))
+    assert got["max_scan"] == 7 and got["since"] == at(3)
+
+
+def test_read_messages_reverse_gets_no_default_since(monkeypatch):
+    got: dict = {}
+    _patched_read(monkeypatch, got, reverse=True)
+    assert "since" not in got
+
+
+def test_max_scan_warning_names_the_chat_and_limit(caplog):
+    client = FakeClient(msgs(*[(i, 20) for i in range(30, 0, -1)]))
+    with caplog.at_level("WARNING"):
+        list(scan_messages(client, types.SimpleNamespace(id=4242), max_scan=5,
+                           flood_error=FakeFloodWaitError, sleep=lambda s: None))
+    assert "4242" in caplog.text and "max_scan=5" in caplog.text

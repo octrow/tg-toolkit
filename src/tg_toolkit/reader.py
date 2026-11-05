@@ -229,8 +229,8 @@ def scan_messages(client, entity, *, min_id: int = 0, since: datetime | None = N
                                 since=since, until=until, max_scan=max_scan)
         if verdict == STOP:
             if max_scan is not None and scanned >= max_scan:
-                log.warning("%shit max_scan=%d — stopping early", f"{label} " if label else "",
-                            max_scan)
+                log.warning("chat %s: hit max_scan=%d, stopping early; older messages not read",
+                            label or getattr(entity, "id", entity), max_scan)
             break
         if verdict == SKIP:
             continue
@@ -266,7 +266,15 @@ def read_messages(*, api_id: int, api_hash: str, session: str | Path,
     should open one client themselves (:func:`make_client`) and loop over
     :func:`collect` — one connection per channel is a waste and invites
     FloodWaits.
+
+    Scans are bounded by default: ``since`` is :func:`window_cutoff`
+    (``DEFAULT_WINDOW_DAYS``) and ``max_scan`` is ``DEFAULT_MAX_SCAN``. Pass
+    ``since=None`` / ``max_scan=None`` to disable either. A ``reverse=True`` scan
+    gets no default ``since`` (the verdicts assume newest-first).
     """
+    collect_kwargs.setdefault("max_scan", DEFAULT_MAX_SCAN)
+    if not collect_kwargs.get("reverse"):
+        collect_kwargs.setdefault("since", window_cutoff())
     with make_client(api_id, api_hash, session,
                      flood_sleep_threshold=flood_sleep_threshold) as client:
         return collect(client, resolve_entity(client, target), mapper, **collect_kwargs)

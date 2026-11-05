@@ -6,8 +6,8 @@ Entry point: open bugs, plans and ideas. Date 2026-11-05. Rule: закрытый
 ## Баги
 
 HIGH
-- [ ] Bare `collect`/`read_messages` has no default bound: `DEFAULT_MAX_SCAN` is exported but applied by nothing, a first run does a full-history scan and invites FloodWait. [reader.py:50](src/tg_toolkit/reader.py), logic-map #5, system-design Risks
-- [ ] `max_scan` truncation is invisible to the caller; storing the last row id as next `min_id` skips messages for good. [reader.py:243](src/tg_toolkit/reader.py), logic-map #10, system-design Risks
+- [x] Bare `collect`/`read_messages` has no default bound: `DEFAULT_MAX_SCAN` is exported but applied by nothing, a first run does a full-history scan and invites FloodWait. [reader.py:50](src/tg_toolkit/reader.py), logic-map #5, system-design Risks ✅ 2026-11-05: `read_messages` now applies both defaults (owner decision); `collect` stays unbounded
+- [x] `max_scan` truncation is invisible to the caller; storing the last row id as next `min_id` skips messages for good. [reader.py:243](src/tg_toolkit/reader.py), logic-map #10, system-design Risks ✅ 2026-11-05 (partly: warning only, with chat id and limit; no truncated signal)
 
 MEDIUM
 - [x] #13: no `--` before title/body in `notify-send`; text starting with `-` shows no toast and is not logged. [push.py:125](src/tg_toolkit/push.py), [fixes #13](docs/plans/2026-11-05-logic-map-fixes.md) ✅ 2026-11-05: `--` now precedes title/body in notify-send argv, tests in tests/test_push.py, не закоммичено
@@ -33,7 +33,7 @@ LOW (details in [the fixes plan](docs/plans/2026-11-05-logic-map-fixes.md))
 
 ## Идеи
 
-- [ ] #5 (question for the owner): document `DEFAULT_MAX_SCAN`/`DEFAULT_WINDOW_DAYS` as caller constants, or apply them in `read_messages`. [fixes #5](docs/plans/2026-11-05-logic-map-fixes.md)
+- [x] #5 (decided: apply in `read_messages`) ✅ 2026-11-05 #5 (question for the owner): document `DEFAULT_MAX_SCAN`/`DEFAULT_WINDOW_DAYS` as caller constants, or apply them in `read_messages`. [fixes #5](docs/plans/2026-11-05-logic-map-fixes.md)
 - [ ] #7: move telethon to an optional extra, or keep and say so. [pyproject.toml:18](pyproject.toml)
 - [ ] Next rung: shared async client / per-chat scheduling. Trigger: wall-clock per run > 50% of the run interval, or repeated FloodWait > 60 s in logs. [system-design §8](docs/system-design.md)
 - [ ] Give each concurrent caller its own session file (guidance, no code). [system-design §5](docs/system-design.md)

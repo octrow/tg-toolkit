@@ -40,8 +40,8 @@ No CLI, GUI or worker. The public API is `tg_toolkit/__init__.py` (re-exports, `
 
 | Entry | Defaults | Notes |
 |---|---|---|
-| `read_messages` | wait_time 1.0 s, `flood_sleep_threshold=10` passed but not applied (A2: Telethon keeps 60 s), no `since`, no `max_scan`, `min_id=0` | opens and closes one client per call; `with` runs Telethon `start()`: first run prompts phone and code on stdin; creates/updates `<session>.session` (SQLite) |
-| `collect` / `scan_messages` | `min_id=0`, `since/until/max_scan=None`, `wait_time=1.0`, `progress_every=25` | `DEFAULT_WINDOW_DAYS=60` is applied only as the default of `window_cutoff`; `DEFAULT_MAX_SCAN=500` is applied by nothing. A bare call scans the full history |
+| `read_messages` | wait_time 1.0 s, `flood_sleep_threshold=10` passed but not applied (A2: Telethon keeps 60 s), `since=window_cutoff()` (60 days, not with `reverse=True`), `max_scan=500` (`None` disables either), `min_id=0` | opens and closes one client per call; `with` runs Telethon `start()`: first run prompts phone and code on stdin; creates/updates `<session>.session` (SQLite) |
+| `collect` / `scan_messages` | `min_id=0`, `since/until/max_scan=None`, `wait_time=1.0`, `progress_every=25` | a bare call scans the full history; only `read_messages` applies `DEFAULT_WINDOW_DAYS`/`DEFAULT_MAX_SCAN` (#5) |
 | `notify` | `urgent=False`, `bot=None`, `app_name="tg-toolkit"` | desktop toast plus optional phone mirror; returns the mirror thread or None |
 | `notify_with_action` | `urgent=False`, `bot=None`, `app_name="tg-toolkit"` | mirror thread first, then notify-send in a daemon thread |
 | `bot_send` / `send_async` | `timeout=10`, `api_base=BOT_API` | never raises for str text and an http(s) `api_base` (slicing, `json.dumps` and `Request()` sit outside the `try`) |
@@ -96,7 +96,7 @@ Branches:
 - `reverse=True` plus `since` or `until` → `ValueError` before any request (a generator: raised on the first `next`, which `collect` does at once);
 - `until` set → `offset_date=until` unless the caller passed `offset_date`;
 - verdict per message (`scan_decision`, in order): `scanned >= max_scan` → STOP; date `< since` → STOP; date `>= until` → SKIP; no date → TAKE;
-- STOP at `max_scan` logs a warning; STOP by `since` is silent;
+- STOP at `max_scan` logs one warning with the chat id and the limit; STOP by `since` is silent;
 - `progress(scanned)` every `progress_every` (25) taken messages.
 `scanned` counts only TAKE messages: SKIPped ones do not count toward `max_scan`, so a caller `offset_date` later than `until` makes the SKIPs unbounded.
 No `limit` is passed to Telethon: the STOP at `max_scan` is reached by pulling message `max_scan+1`, which can cost one more GetHistory chunk (100 messages).
@@ -108,7 +108,7 @@ Module: `reader`
 
 Decides: which rows survive and their order.
 `mapper(msg)` returning None drops the message, after the scan: dropped messages still count toward `max_scan`. `sort_key` re-sorts ascending so the last row carries the highest id.
-The result carries no sign that `max_scan` cut the scan (only a log warning). A caller that stores the last row's id as the next `min_id` then skips, for good, every message between the old cursor and the oldest one taken (#10).
+The result carries no sign that `max_scan` cut the scan (only the log warning with chat id and limit). A caller that stores the last row's id as the next `min_id` then skips, for good, every message between the old cursor and the oldest one taken (#10).
 Module: `reader`
 
 ### A7. read_messages
