@@ -5,6 +5,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-11-05
+
+### Changed
+
+- README refreshed: shorter, plain language.
+- Logic map (`docs/logic-map.md`), findings plan and a sync test added; contributor docs point to them.
+- Lint fixes: `datetime.UTC` alias, sorted `__all__`, no `setattr` with a constant, no useless `return`.
+- GitHub Actions dependencies bumped.
+
 ## [0.1.3] - 2026-10-15
 
 ### Changed
