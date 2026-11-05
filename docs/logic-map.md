@@ -175,8 +175,8 @@ Decides: toast plus optional mirror.
 Branches:
 - `bot=(token, chat_id)` → mirror thread started first (`title\nbody[:500]`);
 - then `notify-send` runs blocking, body cut to 500, urgency critical or normal.
-Fails: `OSError` (no notify-send) is logged; other errors propagate. No timeout on the subprocess. A non-zero exit is ignored (`check=False`, stderr not captured, nothing logged).
-argv has no `--` before title and body: a title or body that starts with `-` (chat text like `- item`, `-5%`) is parsed as an option, notify-send exits 1 with `Unknown option`, and no toast shows (#13).
+Fails: `OSError` (no notify-send) and `TimeoutExpired` (10 s, `NOTIFY_TIMEOUT_S`) are logged; other errors propagate. A non-zero exit is ignored (`check=False`, stderr not captured, nothing logged).
+argv puts `--` before title and body, so text starting with `-` is not parsed as an option (#13 fixed).
 Module: `push`
 
 ### C4. notify_with_action
@@ -186,7 +186,7 @@ Branches:
 - mirror sent without a button;
 - thread runs `notify-send -A action=<label>` and captures stdout; stdout `action` → `on_action()`;
 - any exception in the thread, including a failing `on_action`, is logged.
-Fails: a notify-send that rejects `-A` exits non-zero with empty stdout; the code does not retry without `-A`. The same `-`-leading title/body failure as C3 applies (#13).
+Fails: a notify-send that rejects `-A` exits non-zero; the thread retries once as a plain toast without `-A` (#1 fixed). The `-A` call itself has no timeout (it blocks until the toast is dismissed).
 Module: `push`
 
 ## Output
@@ -196,8 +196,5 @@ Side effects: `resolve_credentials` writes the cache file (and creates its paren
 
 ## Known gaps
 
-- `notify_with_action` has no plain-toast fallback on a notify-send without `-A`, though its docstring promises one (#1).
-- `notify` can block the caller: `subprocess.run` has no timeout (#2).
 - `flood_sleep_threshold` is set on the session, which Telethon ignores; the real threshold is 60 s (#8).
 - A `max_scan` cut is invisible to `collect` callers; advancing the cursor skips the gap for good (#10).
-- A title or body that starts with `-` makes notify-send fail; no toast, nothing logged (#13).

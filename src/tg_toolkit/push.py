@@ -29,6 +29,8 @@ from collections.abc import Callable
 
 log = logging.getLogger(__name__)
 
+NOTIFY_TIMEOUT_S = 10  # a plain toast returns at once; a hung notify-send must not block the caller
+
 BOT_API = "https://api.telegram.org"
 
 #: Bot API sendMessage hard limit; longer text is truncated, not split.
@@ -82,8 +84,8 @@ def notify(title: str, body: str, *, urgent: bool = False,
     thread = send_async(bot[0], bot[1], f"{title}\n{body[:MAX_BODY]}") if bot else None
     try:
         subprocess.run(_notify_send_argv(title, body, urgent=urgent, app_name=app_name),
-                       check=False)
-    except OSError as exc:  # no notify-send (headless box) — push is best-effort
+                       check=False, timeout=NOTIFY_TIMEOUT_S)
+    except (OSError, subprocess.TimeoutExpired) as exc:  # headless box / hung daemon
         log.warning("notify-send failed: %s: %s", type(exc).__name__, exc)
     return thread
 
@@ -109,6 +111,10 @@ def notify_with_action(title: str, body: str, *, action_label: str,
     def _run() -> None:
         try:
             r = subprocess.run(argv, capture_output=True, text=True, check=False)
+            if r.returncode != 0:  # old notify-send rejects -A: plain toast instead
+                plain = _notify_send_argv(title, body, urgent=urgent, app_name=app_name)
+                r = subprocess.run(plain, capture_output=True, text=True, check=False,
+                                   timeout=NOTIFY_TIMEOUT_S)
             if r.stdout.strip() == "action":
                 on_action()
         except Exception as exc:  # noqa: BLE001 — the button is a convenience
@@ -126,4 +132,4 @@ def _notify_send_argv(title: str, body: str, *, urgent: bool, app_name: str,
             f"--urgency={'critical' if urgent else 'normal'}"]
     if action:
         argv += ["-A", action]
-    return [*argv, title, body[:MAX_BODY]]
+    return [*argv, "--", title, body[:MAX_BODY]]

@@ -3,6 +3,7 @@
 1. `README.md`: what the library offers.
 2. `docs/logic-map.md`: how a chat becomes rows and a message becomes a push, every step, every branch, the module behind it.
 3. `docs/plans/`: `2026-11-05-logic-map-fixes.md` lists the known logic gaps.
+4. Open bugs, plans and ideas: [PLAN.md](PLAN.md).
 
 Rules:
 - Change a step or a branch → update `docs/logic-map.md` in the same commit.

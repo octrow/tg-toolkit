@@ -163,15 +163,18 @@ def test_send_async_returns_a_joinable_daemon_thread(urlopen):
 
 # --- notify_with_action ------------------------------------------------------
 
-def _action_argv(monkeypatch, stdout: str):
+def _action_argv(monkeypatch, stdout: str, reject_action: bool = False):
     calls = []
 
     class Result:
-        def __init__(self, out):
+        def __init__(self, out, rc=0):
             self.stdout = out
+            self.returncode = rc
 
     def fake_run(cmd, **kw):
         calls.append(cmd)
+        if "-A" in cmd and reject_action:
+            return Result("", 1)
         return Result(stdout)
 
     monkeypatch.setattr(push.subprocess, "run", fake_run)
@@ -223,3 +226,28 @@ def test_notify_without_notify_send_installed_never_raises(monkeypatch):
 
     monkeypatch.setattr(push.subprocess, "run", missing)
     assert notify("Title", "Body") is None
+
+
+def test_notify_send_args_end_with_double_dash(argv):
+    notify("-5% title", "- body")
+    cmd = argv[0][0]
+    assert cmd[-3:] == ["--", "-5% title", "- body"]
+
+
+def test_notify_has_a_timeout_and_survives_a_hang(monkeypatch):
+    seen = {}
+
+    def hang(cmd, **kw):
+        seen.update(kw)
+        raise push.subprocess.TimeoutExpired(cmd, kw["timeout"])
+
+    monkeypatch.setattr(push.subprocess, "run", hang)
+    notify("T", "B")
+    assert seen["timeout"] == push.NOTIFY_TIMEOUT_S
+
+
+def test_action_toast_retries_without_dash_a_when_rejected(monkeypatch):
+    calls = _action_argv(monkeypatch, "", reject_action=True)
+    notify_with_action("T", "B", action_label="X", on_action=lambda: None).join(timeout=2)
+    assert "-A" in calls[0]
+    assert len(calls) == 2 and "-A" not in calls[1]
