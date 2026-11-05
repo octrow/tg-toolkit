@@ -7,7 +7,7 @@ Stack, flows and per-step findings: [logic-map.md](logic-map.md). Not repeated h
 
 - Users: 1 (the owner), through callers in other repos (chat-watch, jobs-style scrapers). Assumed, no DAU concept applies.
 - Typical call: one chat, incremental `min_id`, tens of new messages per run. Assumed.
-- Worst call: a bare `collect`/`read_messages` on a large chat: full history (logic-map "Entry points"). Assumed 100k messages.
+- Worst call: a bare `collect`/`scan_messages` on a large chat: full history (logic-map "Entry points"). Assumed 100k messages. `read_messages` is bounded by default (60 days, 500 messages).
 - Telethon `iter_messages` page size = 100 messages per GetHistory request. Assumed from Telethon 1.x defaults; logic-map A5 also cites a 100-message chunk.
 - Telegram limit ~30 s / 10 requests per chat for history, Telethon sleeps FloodWait up to 60 s itself. Quoted in `src/tg_toolkit/reader.py:18` and logic-map A2.
 - No numbers from logs or a DB exist: the library keeps no state apart from a session SQLite and an optional credentials cache.
@@ -15,7 +15,7 @@ Stack, flows and per-step findings: [logic-map.md](logic-map.md). Not repeated h
 Measured (source):
 - 694 lines in `src/tg_toolkit/*.py` (`wc -l`): reader 272, export 200, push 129, `__init__` 93.
 - 25 commits, last 2026-11-05 (`git log`).
-- Defaults `wait_time=1.0`, `DEFAULT_MAX_SCAN=500` (defined `reader.py:50`, applied by nothing, logic-map entry points).
+- Defaults `wait_time=1.0`, `DEFAULT_MAX_SCAN=500` (defined `reader.py:50`, applied by default only in `read_messages`, logic-map entry points).
 
 ## 0. What exists
 
@@ -63,7 +63,7 @@ Hand-derived from the constants above (assumed, not measured): 100k messages / 1
 ## 3. API contract
 
 Public API is `src/tg_toolkit/__init__.py` (`__all__`), listed in logic-map "Entry points". n/a as HTTP.
-Contract gaps that matter for callers: `collect` returns a bare list, with no flag that `max_scan` truncated it (logic-map A6, #10).
+Contract gaps that matter for callers: `collect` returns a bare list, with no flag that `max_scan` truncated it, only a log warning naming the chat and the limit (logic-map A6, #10).
 
 ## 4. High-level architecture
 
@@ -93,7 +93,7 @@ Cache: n/a (the only cache is the credentials file; invalidation is manual, and 
 ## 6. Scale and failure
 
 - x10 traffic: still 0.0 req/s. First thing to saturate is Telegram's per-chat limit: 10x more chunks per minute means FloodWait sleeps, not CPU. Each wait is up to 60 s inside Telethon (A2) or `exc.seconds` in `iter_flood_safe` with no cap (`reader.py:178-194`).
-- Telegram slow or down: Telethon connect errors propagate (A5 "any other error"); no timeout on the scan as a whole, only `max_scan`, which nothing applies by default.
+- Telegram slow or down: Telethon connect errors propagate (A5 "any other error"); no timeout on the scan as a whole, only `max_scan`, which only `read_messages` applies by default (500).
 - Bot API takes 8 s: within `timeout=10`, in a daemon thread, caller unaffected. Over 10 s: logged, returns False, message lost (no retry).
 - `notify-send` hangs: `push.py:84` has no timeout, `notify` blocks the caller indefinitely (#2).
 - Retries/backoff: only FloodWait sleep. No retry on push, no circuit breaker; acceptable for notifications.
@@ -116,8 +116,8 @@ Cache: n/a (the only cache is the credentials file; invalidation is manual, and 
 
 ## Risks
 
-- HIGH: bare `collect`/`scan_messages` has no default bound; `DEFAULT_MAX_SCAN=500` (`src/tg_toolkit/reader.py:50`) is exported but unused, so a first run on a large chat does a full-history scan (~17 min at 100k messages, assumed) and invites FloodWait. See logic-map "Entry points".
-- HIGH: truncation by `max_scan` is invisible to callers; storing the last row id as next `min_id` skips messages permanently (`reader.py:243`, logic-map #10).
+- MEDIUM: bare `collect`/`scan_messages` have no default bound by design (only `read_messages` applies `DEFAULT_MAX_SCAN=500` and a 60-day `since`, `src/tg_toolkit/reader.py`), so a caller that opens its own client and passes neither does a full-history scan on a large chat (~17 min at 100k messages, assumed) and invites FloodWait. See logic-map "Entry points".
+- HIGH: truncation by `max_scan` is visible only as a log warning (chat id and limit), not in the result; storing the last row id as next `min_id` skips messages permanently (`reader.py` `scan_messages`/`collect`, logic-map #10).
 - MEDIUM: `iter_flood_safe` sleeps `exc.seconds` with no cap or repeat limit (`reader.py:178-194`); a long ban stalls a caller for hours.
 - MEDIUM: `flood_sleep_threshold` is set on the session where Telethon ignores it (`reader.py:99`, #8); the effective 60 s threshold hides waits from `iter_flood_safe`.
 - MEDIUM: `subprocess.run` without timeout blocks `notify` (`src/tg_toolkit/push.py:84`, #2).

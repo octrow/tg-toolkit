@@ -6,13 +6,13 @@ Entry point: open bugs, plans and ideas. Date 2026-11-05. Rule: закрытый
 ## Баги
 
 HIGH
-- [x] Bare `collect`/`read_messages` has no default bound: `DEFAULT_MAX_SCAN` is exported but applied by nothing, a first run does a full-history scan and invites FloodWait. [reader.py:50](src/tg_toolkit/reader.py), logic-map #5, system-design Risks ✅ 2026-11-05: `read_messages` now applies both defaults (owner decision); `collect` stays unbounded
-- [x] `max_scan` truncation is invisible to the caller; storing the last row id as next `min_id` skips messages for good. [reader.py:243](src/tg_toolkit/reader.py), logic-map #10, system-design Risks ✅ 2026-11-05 (partly: warning only, with chat id and limit; no truncated signal)
+- [x] ✅ 2026-11-05 (9ce41c8): `read_messages` now applies `max_scan=DEFAULT_MAX_SCAN` and `since=window_cutoff()` (60 days, skipped for `reverse=True`) by default, `None` disables either (owner decision); bare `collect`/`scan_messages` stay unbounded by design. [reader.py](src/tg_toolkit/reader.py), logic-map #5, system-design Risks
+- [x] ✅ 2026-11-05 (9ce41c8, partly): a `max_scan` stop logs one warning with the chat id and the limit; the result still carries no truncated signal, so storing the last row id as next `min_id` can skip messages (open item under Планы). [reader.py](src/tg_toolkit/reader.py), logic-map #10, system-design Risks
 
 MEDIUM
-- [x] #13: no `--` before title/body in `notify-send`; text starting with `-` shows no toast and is not logged. [push.py:125](src/tg_toolkit/push.py), [fixes #13](docs/plans/2026-11-05-logic-map-fixes.md) ✅ 2026-11-05: `--` now precedes title/body in notify-send argv, tests in tests/test_push.py, не закоммичено
-- [x] #1: `notify-send -A` is not retried without `-A` on a rejecting version. [push.py:91](src/tg_toolkit/push.py), [fixes #1](docs/plans/2026-11-05-logic-map-fixes.md) ✅ 2026-11-05: `notify_with_action` retries once without `-A` on non-zero exit, tests in tests/test_push.py, не закоммичено
-- [x] #2: `subprocess.run` for notify-send has no timeout, a hung process blocks the caller. [push.py:84](src/tg_toolkit/push.py), [fixes #2](docs/plans/2026-11-05-logic-map-fixes.md) ✅ 2026-11-05: `notify` passes `timeout=NOTIFY_TIMEOUT_S` (10 s) and logs `TimeoutExpired`, tests in tests/test_push.py, не закоммичено
+- [x] #13: no `--` before title/body in `notify-send`; text starting with `-` shows no toast and is not logged. [push.py:125](src/tg_toolkit/push.py), [fixes #13](docs/plans/2026-11-05-logic-map-fixes.md) ✅ 2026-11-05: `--` now precedes title/body in notify-send argv, tests in tests/test_push.py, 14b4d80
+- [x] #1: `notify-send -A` is not retried without `-A` on a rejecting version. [push.py:91](src/tg_toolkit/push.py), [fixes #1](docs/plans/2026-11-05-logic-map-fixes.md) ✅ 2026-11-05: `notify_with_action` retries once without `-A` on non-zero exit, tests in tests/test_push.py, 14b4d80
+- [x] #2: `subprocess.run` for notify-send has no timeout, a hung process blocks the caller. [push.py:84](src/tg_toolkit/push.py), [fixes #2](docs/plans/2026-11-05-logic-map-fixes.md) ✅ 2026-11-05: `notify` passes `timeout=NOTIFY_TIMEOUT_S` (10 s) and logs `TimeoutExpired`, tests in tests/test_push.py, 14b4d80
 - [ ] #8: `client.session.flood_sleep_threshold` is dead in Telethon 1.x (and a test enshrines it). [reader.py:99](src/tg_toolkit/reader.py), [fixes #8](docs/plans/2026-11-05-logic-map-fixes.md)
 - [ ] `iter_flood_safe` sleeps `exc.seconds` with no cap or repeat limit; a long ban stalls a caller for hours. [reader.py:178](src/tg_toolkit/reader.py), system-design Risks
 - [ ] Concurrent callers on one `<session>.session` can hit `database is locked` (assumed, not reproduced). system-design Risks, [reader.py](src/tg_toolkit/reader.py) `make_client`
@@ -33,7 +33,7 @@ LOW (details in [the fixes plan](docs/plans/2026-11-05-logic-map-fixes.md))
 
 ## Идеи
 
-- [x] #5 (decided: apply in `read_messages`) ✅ 2026-11-05 #5 (question for the owner): document `DEFAULT_MAX_SCAN`/`DEFAULT_WINDOW_DAYS` as caller constants, or apply them in `read_messages`. [fixes #5](docs/plans/2026-11-05-logic-map-fixes.md)
+- [x] ✅ 2026-11-05 #5: owner decided to apply `DEFAULT_MAX_SCAN`/`DEFAULT_WINDOW_DAYS` in `read_messages` (9ce41c8). [fixes #5](docs/plans/2026-11-05-logic-map-fixes.md)
 - [ ] #7: move telethon to an optional extra, or keep and say so. [pyproject.toml:18](pyproject.toml)
 - [ ] Next rung: shared async client / per-chat scheduling. Trigger: wall-clock per run > 50% of the run interval, or repeated FloodWait > 60 s in logs. [system-design §8](docs/system-design.md)
 - [ ] Give each concurrent caller its own session file (guidance, no code). [system-design §5](docs/system-design.md)
