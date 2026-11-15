@@ -12,7 +12,15 @@ import sys
 import types
 
 import pytest
-from fakes import Channel, Dialog, FakeClient, FakeFloodWaitError, FloodingClient, Message, User
+from fakes import (
+    Channel,
+    Dialog,
+    FakeClient,
+    FakeFloodWaitError,
+    FloodingClient,
+    Message,
+    User,
+)
 
 from tg_toolkit import reader
 from tg_toolkit.reader import (
