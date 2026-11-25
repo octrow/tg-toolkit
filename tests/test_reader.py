@@ -38,7 +38,7 @@ from tg_toolkit.reader import (
     window_cutoff,
 )
 
-UTC = dt.timezone.utc
+UTC = dt.UTC
 
 
 def at(day: int, hour: int = 12) -> dt.datetime:
